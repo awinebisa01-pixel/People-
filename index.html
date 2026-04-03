@@ -3,167 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TikTok Coin Store Native</title>
+    <title>TikTok Recharge Native</title>
     <style>
         :root {
             --tt-red: #FE2C55;
             --tt-black: #161823;
             --tt-gray: #8A8B91;
-            --tt-light-gray: #F1F1F2;
-            --tt-blue: #007BFF;
+            --tt-border: #F1F1F2;
+            --coin-gold: #FACD31;
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", Helvetica, sans-serif; background-color: #FFFFFF; margin: 0; color: var(--tt-black); overflow-x: hidden; }
+        body { font-family: -apple-system, sans-serif; background: #fff; margin: 0; color: var(--tt-black); }
 
-        /* Navigation Bar */
-        .nav-bar { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; position: sticky; top: 0; background: #fff; z-index: 10; }
-        .nav-title { font-size: 17px; font-weight: 600; }
+        /* Real TikTok Coin Icon Component */
+        .tt-coin {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-color: var(--coin-gold);
+            border-radius: 50%;
+            position: relative;
+            vertical-align: middle;
+            box-shadow: inset 0 -1px 2px rgba(0,0,0,0.2);
+        }
+        .tt-coin::after {
+            content: "d"; /* Replicating the 'd' or note logo look */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 900;
+            font-family: serif;
+        }
 
-        /* Balance Header */
-        .balance-container { text-align: center; padding: 30px 0; }
-        .balance-label { color: var(--tt-gray); font-size: 14px; margin-bottom: 8px; }
-        .balance-value { font-size: 42px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .coin-gold { width: 32px; height: 32px; background: #FACD31; border-radius: 50%; box-shadow: inset 0 -2px 4px rgba(0,0,0,0.2); }
+        /* Nav & Header */
+        .nav { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; border-bottom: 0.5px solid var(--tt-border); }
+        .balance-area { text-align: center; padding: 35px 0; }
+        .bal-val { font-size: 48px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .bal-val .tt-coin { width: 36px; height: 36px; }
+        .bal-val .tt-coin::after { font-size: 22px; }
 
-        /* Exchange Section (Replicating Image 1) */
-        .exchange-section { background: var(--tt-light-gray); margin: 0 16px 20px; padding: 16px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .exchange-info strong { display: block; font-size: 14px; margin-bottom: 2px; }
-        .exchange-info span { font-size: 12px; color: var(--tt-gray); }
+        /* Exchange Row */
+        .exchange-row { background: var(--tt-border); margin: 0 16px 24px; padding: 18px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .ex-text strong { font-size: 15px; display: block; }
+        .ex-text span { font-size: 13px; color: var(--tt-gray); }
 
-        /* Recharge Grid (Replicating Image 2) */
-        .coin-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; padding: 0 16px 100px; }
-        .coin-card { border: 1px solid #E5E5E5; border-radius: 8px; padding: 16px 8px; text-align: center; transition: all 0.1s; cursor: pointer; }
-        .coin-card:active { transform: scale(0.95); background: var(--tt-light-gray); }
-        .card-amount { display: block; font-weight: 700; font-size: 15px; margin-bottom: 4px; }
-        .card-price { display: block; font-size: 12px; color: var(--tt-gray); }
-        .custom-card { background: var(--tt-light-gray); border: none; }
+        /* Pricing Grid (GHS) */
+        .recharge-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 0 16px; }
+        .coin-box { border: 1px solid #E5E5E5; border-radius: 8px; padding: 15px 5px; text-align: center; position: relative; cursor: pointer; transition: 0.1s; }
+        .coin-box:active { background: #fafafa; transform: scale(0.96); }
+        .coin-box.selected { border: 1.5px solid #007BFF; background: #F0F7FF; }
+        .box-amt { font-weight: 700; font-size: 15px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .box-price { font-size: 12px; color: var(--tt-gray); }
 
-        /* Floating Footer Action */
-        .footer-action { position: fixed; bottom: 0; width: 100%; padding: 16px; background: white; border-top: 1px solid #eee; box-shadow: 0 -5px 15px rgba(0,0,0,0.05); }
-        .btn-primary { background: var(--tt-red); color: white; border: none; width: 100%; padding: 14px; border-radius: 4px; font-size: 16px; font-weight: 600; cursor: pointer; }
+        /* Action Buttons */
+        .footer { position: fixed; bottom: 0; width: 100%; padding: 16px; background: #fff; border-top: 0.5px solid var(--tt-border); }
+        .btn-send { background: var(--tt-red); color: #fff; border: none; width: 100%; padding: 15px; border-radius: 4px; font-weight: 700; font-size: 16px; }
 
-        /* Real Pop-up Overlay (Blur Effect) */
-        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 100; align-items: center; justify-content: center; }
-        .modal-real { background: white; width: 85%; border-radius: 16px; overflow: hidden; animation: popIn 0.3s cubic-bezier(0.17, 0.89, 0.32, 1.28); }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-
-        .modal-header { padding: 20px; text-align: center; border-bottom: 1px solid #eee; }
-        .modal-body { padding: 20px; }
-        .input-group { margin-bottom: 15px; }
-        .input-group label { display: block; font-size: 12px; color: var(--tt-gray); margin-bottom: 5px; text-transform: uppercase; }
-        .input-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 16px; background: var(--tt-light-gray); }
-
-        /* Verification Receipt Details */
-        .receipt-card { background: #F8F8F8; padding: 15px; border-radius: 10px; margin-top: 10px; }
-        .receipt-item { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 13px; }
-        .receipt-item span:first-child { color: var(--tt-gray); }
-        .status-badge { color: #22C55E; font-weight: 700; display: flex; align-items: center; gap: 4px; justify-content: center; margin-top: 10px; }
+        /* Pop-up Overlay & Receipt */
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(8px); z-index: 100; align-items: center; justify-content: center; }
+        .modal { background: #fff; width: 88%; border-radius: 20px; padding: 24px; animation: spring 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes spring { from { transform: scale(0.7); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        
+        input { width: 100%; padding: 14px; margin: 12px 0; border: none; background: var(--tt-border); border-radius: 10px; font-size: 16px; }
+        .receipt-card { background: #f9f9f9; border-radius: 12px; padding: 16px; margin: 15px 0; border: 0.5px solid #eee; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 10px; font-size: 14px; }
+        .success-mark { width: 50px; height: 50px; background: #22C55E; color: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 15px; }
     </style>
 </head>
 <body>
 
-    <div class="nav-bar">
-        <span>✕</span>
-        <span class="nav-title">Recharge</span>
-        <span>ⓘ</span>
+    <div class="nav">
+        <span style="font-size: 20px;">✕</span>
+        <span style="font-weight: 600;">Recharge</span>
+        <span style="font-size: 20px;">⋮</span>
     </div>
 
-    <div class="balance-container">
-        <div class="balance-label">Coins Balance</div>
-        <div class="balance-value">
-            <div class="coin-gold"></div>
-            <span id="currentBalance">31,722</span>
+    <div class="balance-area">
+        <div style="color: var(--tt-gray); font-size: 14px; margin-bottom: 5px;">Coins Balance</div>
+        <div class="bal-val">
+            <div class="tt-coin"></div>
+            <span id="balDisplay">31,722</span>
         </div>
     </div>
 
-    <div class="exchange-section" onclick="exchangeRevenue()">
-        <div class="exchange-info">
+    <div class="exchange-row" onclick="exchange()">
+        <div class="ex-text">
             <strong>Exchange</strong>
-            <span id="revSubtext">From Gift Revenue: $47.69 (4,111 coins)</span>
+            <span id="revStatus">From Gift Revenue: $47.69 (4,111 coins)</span>
         </div>
-        <span style="color: #ccc; font-size: 20px;">›</span>
+        <span style="color: #ccc;">›</span>
     </div>
 
-    <div class="coin-grid">
-        <div class="coin-card"><span class="card-amount">30</span><span class="card-price">GHS 4.1</span></div>
-        <div class="coin-card"><span class="card-amount">350</span><span class="card-price">GHS 47.85</span></div>
-        <div class="coin-card"><span class="card-amount">700</span><span class="card-price">GHS 95.65</span></div>
-        <div class="coin-card" style="border-color: var(--tt-blue);"><span class="card-amount">1,400</span><span class="card-price" style="color: var(--tt-blue)">GHS 191.25</span></div>
-        <div class="coin-card"><span class="card-amount">3,500</span><span class="card-price">GHS 478.05</span></div>
-        <div class="coin-card custom-card"><span class="card-amount">Custom</span><span class="card-price">Any amount</span></div>
+    <div class="recharge-grid">
+        <div class="coin-box"><div class="box-amt"><div class="tt-coin"></div>30</div><div class="box-price">GHS 4.1</div></div>
+        <div class="coin-box"><div class="box-amt"><div class="tt-coin"></div>350</div><div class="box-price">GHS 47.85</div></div>
+        <div class="coin-box"><div class="box-amt"><div class="tt-coin"></div>700</div><div class="box-price">GHS 95.65</div></div>
+        <div class="coin-box selected"><div class="box-amt"><div class="tt-coin"></div>1,400</div><div class="box-price">GHS 191.25</div></div>
+        <div class="coin-box"><div class="box-amt"><div class="tt-coin"></div>3,500</div><div class="box-price">GHS 478.05</div></div>
+        <div class="coin-box" style="background: var(--tt-border); border:none;"><div class="box-amt">Custom</div><div class="box-price">Any amount</div></div>
     </div>
 
-    <div class="footer-action">
-        <button class="btn-primary" onclick="showModal('sendModal')">SEND TO TOP USER</button>
+    <div class="footer">
+        <button class="btn-send" onclick="openModal('sendModal')">SEND TO TOP USER</button>
     </div>
 
     <div id="sendModal" class="overlay">
-        <div class="modal-real">
-            <div class="modal-header"><span style="font-weight:700">Send Gift</span></div>
-            <div class="modal-body">
-                <div class="input-group">
-                    <label>Recipient</label>
-                    <input type="text" id="targetUser" placeholder="@username">
-                </div>
-                <div class="input-group">
-                    <label>Coin Amount</label>
-                    <input type="number" id="sendAmount" placeholder="Enter amount">
-                </div>
-                <button class="btn-primary" onclick="processSend()">Verify & Send</button>
-                <button onclick="hideModal('sendModal')" style="width:100%; background:none; border:none; margin-top:12px; color:var(--tt-gray); font-size:14px;">Cancel</button>
-            </div>
+        <div class="modal">
+            <h3 style="text-align:center; margin-top:0;">Send Coins</h3>
+            <input type="text" id="target" placeholder="@username">
+            <input type="number" id="amt" placeholder="Enter coin amount">
+            <button class="btn-send" onclick="confirmSend()">Verify & Send</button>
+            <button onclick="closeModal('sendModal')" style="width:100%; background:none; border:none; margin-top:15px; color:var(--tt-gray);">Cancel</button>
         </div>
     </div>
 
     <div id="receiptModal" class="overlay">
-        <div class="modal-real">
-            <div class="modal-header"><span style="font-weight:700">Transaction Receipt</span></div>
-            <div class="modal-body">
-                <div class="receipt-card">
-                    <div class="receipt-item"><span>Sent To</span><strong id="rUser"></strong></div>
-                    <div class="receipt-item"><span>Amount</span><strong id="rAmt"></strong></div>
-                    <div class="receipt-item"><span>Date</span><strong id="rDate"></strong></div>
-                    <div class="receipt-item"><span>Time</span><strong id="rTime"></strong></div>
-                    <div class="status-badge">● Payment Verified</div>
-                </div>
-                <button class="btn-primary" style="background:var(--tt-black); margin-top:20px;" onclick="hideModal('receiptModal')">Done</button>
+        <div class="modal">
+            <div class="success-mark">✓</div>
+            <h3 style="text-align:center; margin-bottom:20px;">Transfer Verified</h3>
+            <div class="receipt-card">
+                <div class="receipt-row"><span>Sent To</span><strong id="rTo"></strong></div>
+                <div class="receipt-row"><span>Amount</span><strong id="rAmt"></strong></div>
+                <div class="receipt-row"><span>Date</span><strong id="rDate"></strong></div>
+                <div class="receipt-row"><span>Status</span><span style="color:#22C55E; font-weight:700;">Completed</span></div>
             </div>
+            <button class="btn-send" style="background:var(--tt-black)" onclick="closeModal('receiptModal')">Done</button>
         </div>
     </div>
 
     <script>
         let wallet = { coins: 31722, revenue: 47.69 };
 
-        function showModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function hideModal(id) { document.getElementById(id).style.display = 'none'; }
+        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-        function exchangeRevenue() {
+        function exchange() {
             if(wallet.revenue > 0) {
-                wallet.coins += 4111;
-                wallet.revenue = 0;
-                document.getElementById('currentBalance').innerText = wallet.coins.toLocaleString();
-                document.getElementById('revSubtext').innerText = "Exchange Successful: $0.00";
+                wallet.coins += 4111; wallet.revenue = 0;
+                document.getElementById('balDisplay').innerText = wallet.coins.toLocaleString();
+                document.getElementById('revStatus').innerText = "Exchange Successful: $0.00";
             }
         }
 
-        function processSend() {
-            const user = document.getElementById('targetUser').value;
-            const amt = parseInt(document.getElementById('sendAmount').value);
+        function confirmSend() {
+            const user = document.getElementById('target').value;
+            const val = parseInt(document.getElementById('amt').value);
 
-            if(!user || !amt || amt > wallet.coins) return alert("Invalid Details or Balance");
+            if(!user || !val || val > wallet.coins) return alert("Verify Details");
 
-            wallet.coins -= amt;
-            document.getElementById('currentBalance').innerText = wallet.coins.toLocaleString();
+            wallet.coins -= val;
+            document.getElementById('balDisplay').innerText = wallet.coins.toLocaleString();
 
             const d = new Date();
-            document.getElementById('rUser').innerText = "@" + user;
-            document.getElementById('rAmt').innerText = amt.toLocaleString() + " Coins";
-            document.getElementById('rDate').innerText = d.toLocaleDateString();
-            document.getElementById('rTime').innerText = d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('rTo').innerText = "@" + user;
+            document.getElementById('rAmt').innerText = val.toLocaleString() + " Coins";
+            document.getElementById('rDate').innerText = d.toLocaleString([], {dateStyle: 'medium', timeStyle: 'short'});
 
-            hideModal('sendModal');
-            showModal('receiptModal');
+            closeModal('sendModal');
+            openModal('receiptModal');
         }
     </script>
 </body>
